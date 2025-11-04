@@ -2,56 +2,46 @@ import os
 import asyncio
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
+from aiohttp import web
 
-# ================== Настройки ==================
-api_id = int(os.environ.get("API_ID"))
-api_hash = os.environ.get("API_HASH")
-string_session = os.environ.get("STRING_SESSION")
-target_chat_env = os.environ.get("TARGET_CHAT", "me")
+# === Настройки аккаунта ===
+api_id = int(os.environ.get("API_ID", "23246373"))  # твой API ID
+api_hash = os.environ.get("API_HASH", "daa39e9d5b1bc1261b0c3e27853205fc")  # твой API HASH
+string_session = os.environ.get("STRING_SESSION")  # вставь STRING_SESSION в переменные окружения
+target_chat = int(os.environ.get("TARGET_CHAT", "-4734945370"))  # ID или username чата для пересылки
 
-# Если передан числовой ID — приводим к int, иначе оставляем строку (например "@username")
-try:
-    target_chat = int(target_chat_env)
-except Exception:
-    target_chat = target_chat_env
-
-# Слова для фильтрации
+# === Слова для фильтрации ===
 include_words = [
     "монтаж", "монтажер", "#ищу_монтаж", "монтажера",
     "екатеринбург", "екб", "колорист", "покрасить", "магнитогорск"
 ]
+
 exclude_words = [
     "#ищу_работу", "#ищуработу"
 ]
 
-# ================== Telethon client ==================
+# === Создаём Telethon клиента ===
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
+# === Обработчик сообщений ===
 @client.on(events.NewMessage)
 async def handler(event):
     try:
-        # безопасно получаем текст (могут быть сообщения без .message)
-        message_text = (event.message.message or "").lower()
+        if not event.message.message:
+            return
 
+        message_text = event.message.message.lower()
+
+        # Проверка фильтров
         if any(word in message_text for word in include_words) and not any(bad in message_text for bad in exclude_words):
             chat = await event.get_chat()
             sender = await event.get_sender()
 
-            # корректное имя чата
-            if hasattr(chat, 'title'):
-                chat_name = chat.title
-            elif hasattr(chat, 'username'):
-                chat_name = chat.username
-            else:
-                chat_name = getattr(chat, 'first_name', 'Неизвестный чат')
+            # Название чата
+            chat_name = getattr(chat, "title", None) or getattr(chat, "username", None) or "Неизвестный чат"
 
-            # корректное имя отправителя
-            if hasattr(sender, 'first_name'):
-                sender_name = sender.first_name
-            elif hasattr(sender, 'username'):
-                sender_name = sender.username
-            else:
-                sender_name = str(sender)
+            # Имя отправителя
+            sender_name = getattr(sender, "first_name", None) or getattr(sender, "title", None) or "Неизвестно"
 
             text = (
                 f"📢 Из чата: {chat_name}\n"
@@ -60,49 +50,33 @@ async def handler(event):
             )
 
             await client.send_message(target_chat, text)
-
+            print(f"✅ Переслано сообщение из {chat_name}")
     except Exception as e:
-        # печатаем ошибку в лог, но не падаем
-        print("⚠️ Ошибка при обработке сообщения:", repr(e))
+        print(f"⚠️ Ошибка: {e}")
 
-# ================== Запуск Telethon и HTTP health ==================
-async def start_telethon():
-    # Запускаем клиент и ждём отключения (работает постоянно)
-    await client.start()
-    print("✅ Telethon client started")
-    await client.run_until_disconnected()
+# === aiohttp сервер для Render (держит процесс активным) ===
+async def handle(request):
+    return web.Response(text="✅ Bot is running")
 
-async def start_health_server():
-    # Простой HTTP endpoint, чтобы Render видел, что сервис жив
-    from aiohttp import web
-
-    async def handle(request):
-        return web.Response(text="OK")
-
+async def web_server():
     app = web.Application()
     app.router.add_get("/", handle)
-
-    port = int(os.environ.get("PORT", "8000"))
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", port)
+    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 8080)))
     await site.start()
-    print(f"✅ Health server listening on 0.0.0.0:{port}")
+    print(f"🌐 Web server listening on port {os.environ.get('PORT', 8080)}")
 
-    # держим задачу живой
-    while True:
-        await asyncio.sleep(3600)
-
+# === Основной запуск ===
 async def main():
-    # запускаем параллельно Telethon и health server
+    await client.start()
+    print("🤖 Бот запущен и слушает чаты...")
+
+    # Запуск обоих процессов параллельно
     await asyncio.gather(
-        start_telethon(),
-        start_health_server()
+        client.run_until_disconnected(),
+        web_server()
     )
 
 if __name__ == "__main__":
-    # запускаем главный цикл
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Stopping...")
+    asyncio.run(main())
