@@ -4,9 +4,9 @@ from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 from aiohttp import web
 
-api_id = int(os.environ.get("API_ID", "23246373"))
-api_hash = os.environ.get("API_HASH", "daa39e9d5b1bc1261b0c3e27853205fc")
-string_session = os.environ.get("STRING_SESSION")
+api_id = int(os.environ["API_ID"])
+api_hash = os.environ["API_HASH"]
+string_session = os.environ["STRING_SESSION"]
 target_chat = int(os.environ.get("TARGET_CHAT", "-4734945370"))
 
 include_words = [
@@ -51,9 +51,8 @@ async def handler(event):
     except Exception as e:
         print(f"⚠️ Ошибка: {e}")
 
-# === HTTP сервер для Render ===
 async def handle(request):
-    return web.Response(text="✅ Bot is alive")
+    return web.Response(text="✅ Bot is alive", content_type="text/plain")
 
 async def web_server():
     app = web.Application()
@@ -64,7 +63,6 @@ async def web_server():
     await site.start()
     print(f"🌐 Web server listening on port {os.environ.get('PORT', 8080)}")
 
-# === Heartbeat (проверка соединения) ===
 async def heartbeat():
     while True:
         try:
@@ -72,21 +70,14 @@ async def heartbeat():
             print(f"💓 Heartbeat OK — {me.username}")
         except Exception as e:
             print(f"💔 Heartbeat failed: {e}")
-        await asyncio.sleep(120)  # каждые 2 минуты
+        await asyncio.sleep(120)
 
 async def main():
     await client.start()
     print("🤖 Бот запущен и слушает чаты...")
-    await asyncio.gather(
-        client.run_until_disconnected(),
-        web_server(),
-        heartbeat()
-    )
+    asyncio.create_task(web_server())
+    asyncio.create_task(heartbeat())
+    await client.run_until_disconnected()
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
-
-
