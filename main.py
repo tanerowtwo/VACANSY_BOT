@@ -33,6 +33,7 @@ exclude_words = [
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
+# === Фильтр сообщений ===
 @client.on(events.NewMessage)
 async def handler(event):
     try:
@@ -40,19 +41,25 @@ async def handler(event):
             return
 
         msg = event.message.message.lower()
+
         if any(w in msg for w in include_words) and not any(b in msg for b in exclude_words):
             chat = await event.get_chat()
             sender = await event.get_sender()
             chat_name = getattr(chat, "title", None) or getattr(chat, "username", None) or "Неизвестный чат"
             sender_name = getattr(sender, "first_name", None) or getattr(sender, "title", None) or "Неизвестно"
+
             text = f"📢 Из чата: {chat_name}\n👤 От: {sender_name}\n\n{event.message.message}"
             await client.send_message(target_chat, text)
+
             print(f"✅ Переслано сообщение из {chat_name}")
+
     except Exception as e:
         print(f"⚠️ Ошибка: {e}")
 
+
+# === HTTP сервер Render ===
 async def handle(request):
-    return web.Response(text="✅ Bot is alive", content_type="text/plain")
+    return web.Response(text="OK", content_type="text/plain")
 
 async def web_server():
     app = web.Application()
@@ -61,8 +68,10 @@ async def web_server():
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 8080)))
     await site.start()
-    print(f"🌐 Web server listening on port {os.environ.get('PORT', 8080)}")
+    print("🌐 Web server started")
 
+
+# === Heartbeat ===
 async def heartbeat():
     while True:
         try:
@@ -72,12 +81,31 @@ async def heartbeat():
             print(f"💔 Heartbeat failed: {e}")
         await asyncio.sleep(120)
 
+
+# === Keep-Alive для Render ===
+async def keep_alive():
+    import aiohttp
+    while True:
+        try:
+            async with aiohttp.ClientSession() as session:
+                await session.get("https://vacansy-bot.onrender.com", timeout=10)
+            print("🔄 keep-alive ping ok")
+        except Exception as e:
+            print(f"❌ keep-alive failed: {e}")
+        await asyncio.sleep(120)
+
+
+# === MAIN ===
 async def main():
     await client.start()
     print("🤖 Бот запущен и слушает чаты...")
+
     asyncio.create_task(web_server())
     asyncio.create_task(heartbeat())
+    asyncio.create_task(keep_alive())
+
     await client.run_until_disconnected()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
