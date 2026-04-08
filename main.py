@@ -4,11 +4,11 @@ from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 from aiohttp import web
 
+# === ENV ===
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
 string_session = os.environ["STRING_SESSION"]
-FRIEND_ID = int(os.environ["FRIEND_ID"])
-
+FRIEND_ID = int(os.environ.get("FRIEND_ID", "0"))
 
 # === HTTP сервер ===
 async def handle(request):
@@ -19,41 +19,70 @@ async def web_server():
     app.router.add_get("/", handle)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 8080)))
+    site = web.TCPSite(
+        runner,
+        "0.0.0.0",
+        int(os.environ.get("PORT", 8080))
+    )
     await site.start()
     print("🌐 Web server started")
 
-
-async def main():
-    client = TelegramClient(StringSession(string_session), api_id, api_hash)
-
-    @client.on(events.NewMessage)
-    async def handler(event):
+# === TELEGRAM ЛОГИКА ===
+async def start_telegram():
+    while True:  # автоперезапуск если упадёт
         try:
-            if not event.is_private:
-                return
+            print("🚀 Starting client...")
 
-            sender = await event.get_sender()
+            client = TelegramClient(
+                StringSession(string_session),
+                api_id,
+                api_hash
+            )
 
-            if sender.id != FRIEND_ID:
-                return
+            @client.on(events.NewMessage)
+            async def handler(event):
+                try:
+                    if not event.is_private:
+                        return
 
-            text = (event.message.message or "").lower()
+                    sender = await event.get_sender()
 
-            if "instagram.com" in text or "instagr.am" in text:
-                await asyncio.sleep(0.3)
-                await event.delete()
-                print("❌ Удалено сообщение с Instagram")
+                    if sender.id != FRIEND_ID:
+                        return
+
+                    text = (event.message.message or "").lower()
+
+                    if "instagram.com" in text or "instagr.am" in text:
+                        await asyncio.sleep(0.3)
+                        await event.delete()
+                        print("❌ Удалено сообщение с Instagram")
+
+                except Exception as e:
+                    print(f"⚠️ Handler error: {e}")
+
+            await client.start()
+            print("🤖 Бот запущен")
+
+            await client.run_until_disconnected()
 
         except Exception as e:
-            print(f"⚠️ Ошибка: {e}")
+            print(f"💥 Telegram crashed: {e}")
+            print("🔄 Перезапуск через 5 секунд...")
+            await asyncio.sleep(5)
 
-    await client.start()
-    print("🤖 Бот запущен")
+# === MAIN ===
+async def main():
+    print("🟡 Starting services...")
 
-    asyncio.create_task(web_server())
+    # сначала веб-сервер
+    await web_server()
 
-    await client.run_until_disconnected()
+    # потом телеграм в фоне
+    asyncio.create_task(start_telegram())
+
+    # держим процесс живым
+    while True:
+        await asyncio.sleep(3600)
 
 
 if __name__ == "__main__":
