@@ -32,11 +32,19 @@ async def handler(event):
             sender = await event.get_sender()
 
             chat_name = getattr(chat, "title", None) or getattr(chat, "username", None) or "Неизвестный чат"
-            sender_name = getattr(sender, "first_name", None) or getattr(sender, "title", None) or "Неизвестно"
 
-            text = f"📢 Из чата: {chat_name}\n👤 От: {sender_name}\n\n{event.message.message}"
+            username = getattr(sender, "username", None)
+            user_id = sender.id
 
-            await client.send_message(target_chat, text)
+            # === Кликабельное имя ===
+            if username:
+                sender_display = f'<a href="https://t.me/{username}">@{username}</a>'
+            else:
+                sender_display = f'<a href="tg://user?id={user_id}">Пользователь</a>'
+
+            text = f"📢 Из чата: {chat_name}\n👤 От: {sender_display}\n\n{event.message.message}"
+
+            await client.send_message(target_chat, text, parse_mode="html")
 
             print(f"✅ Переслано сообщение из {chat_name}")
 
