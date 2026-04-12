@@ -1,6 +1,7 @@
 import os
 import asyncio
-from telethon import TelegramClient, events
+import urllib.parse
+from telethon import TelegramClient, events, Button
 from telethon.sessions import StringSession
 from aiohttp import web
 
@@ -18,7 +19,6 @@ exclude_words = ["#ищу_работу", "#ищуработу", "я видеом
 
 client = TelegramClient(StringSession(string_session), api_id, api_hash)
 
-# === Фильтр сообщений ===
 @client.on(events.NewMessage)
 async def handler(event):
     try:
@@ -36,7 +36,7 @@ async def handler(event):
             username = getattr(sender, "username", None)
             user_id = sender.id
 
-            # === Кликабельное имя ===
+            # Кликабельное имя
             if username:
                 sender_display = f'<a href="https://t.me/{username}">@{username}</a>'
             else:
@@ -44,7 +44,30 @@ async def handler(event):
 
             text = f"📢 Из чата: {chat_name}\n👤 От: {sender_display}\n\n{event.message.message}"
 
-            await client.send_message(target_chat, text, parse_mode="html")
+            # Заготовленные сообщения
+            msg1 = "Здравствуйте! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
+            msg2 = "Добрый день! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
+            msg3 = "Приветствую! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
+
+            msg1_encoded = urllib.parse.quote(msg1)
+            msg2_encoded = urllib.parse.quote(msg2)
+            msg3_encoded = urllib.parse.quote(msg3)
+
+            buttons = []
+
+            if username:
+                buttons = [
+                    [Button.url("✉️ Здр", f"https://t.me/{username}?text={msg1_encoded}")],
+                    [Button.url("✉️ Добр", f"https://t.me/{username}?text={msg2_encoded}")],
+                    [Button.url("✉️ Прив", f"https://t.me/{username}?text={msg3_encoded}")]
+                ]
+
+            await client.send_message(
+                target_chat,
+                text,
+                buttons=buttons if buttons else None,
+                parse_mode="html"
+            )
 
             print(f"✅ Переслано сообщение из {chat_name}")
 
@@ -52,7 +75,7 @@ async def handler(event):
         print(f"⚠️ Ошибка: {e}")
 
 
-# === HTTP сервер Render ===
+# === HTTP сервер ===
 async def handle(request):
     return web.Response(text="OK", content_type="text/plain")
 
@@ -77,7 +100,7 @@ async def heartbeat():
         await asyncio.sleep(120)
 
 
-# === Keep-Alive для Render ===
+# === Keep Alive ===
 async def keep_alive():
     import aiohttp
     while True:
@@ -93,7 +116,7 @@ async def keep_alive():
 # === MAIN ===
 async def main():
     await client.start()
-    print("🤖 Бот запущен и слушает чаты...")
+    print("🤖 Бот запущен...")
 
     asyncio.create_task(web_server())
     asyncio.create_task(heartbeat())
