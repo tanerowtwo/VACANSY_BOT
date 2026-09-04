@@ -13,16 +13,16 @@ asyncio.set_event_loop(loop)
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
 string_session = os.environ["STRING_SESSION"]
-target_chat = int(os.environ.get("TARGET_CHAT", "-4734945370"))
+target_chat = int(os.environ.get("TARGET_CHAT", "-5514752703"))
 
 include_words = [
     "монтаж", "монтажер", "#ищу_монтаж", "монтажера", "смонтировать",
     "екатеринбург", "екб", "колорист", "покрасить", "цветокоррекция", "магнитогорск", "челябинск"
 ]
 
-blacklist_chats = [-1002392926279, 1126831003]
+blacklist_chats = [-1002392926279, 1126831003, 1583181300]
 
-exclude_words = ["#ищу_работу", "#ищуработу", "я видеомонтажёр", "занимаюсь монтажом", "#резюме", "нахожусь в поисках проектов", "я монтажёр", "я видеомонтажер", "я монтажер", "#портфолио", "#помогу", "#рилсмейкер", "предлагаю свою кандидатуру", "делаю монтаж", "мое портфолио", "я #видеомонтажёр", "работаю с блогерами", "reels / shorts / tiktok", "добро пожаловать в группу шапка чат.", "я занимаюсь монтажом", "создам красивую картинку", "я монтирую", "я помогу тебе", "мой монтаж", "предлагаю услуги", "почему вам стоит выбрать меня", "ищу новые проекты", "я оператор-постановщик", "почему стоит выбрать меня", "reels", "я - монтажер", "занимаюсь монтажом", "я начинающий монтажёр", "я начинающий специалист", "я монтирую", "я видеооператор-монтажер", "я колорист", "я занимаюсь монтажем", "создаю ролики", "мы делаем ролики", "тогда тебе — ко мне", "чем я конкретно занимаюсь", "я оператор-видеомонтажер", "вот что я умею", "я full-time колорист", "сделаю качественный моушен", "я сведу ваши лучшие кадры", "хочешь такой же монтаж", "свободен для проектов", "свободен для новых проектов", "летаю на дронах", "я начинающий монтажер", "я fulltime колорист", "я являюсь видеомонтажером", "я знаю толк в монтаже", "ваше сообщение удалено", "улетит в @ru_montage_pins", "ищу смм-менеджера.", "делаю волшебство в сфере монтажа", "clarity design", "@winerooo", "@kartinsky", "смонтирую бесплатно парочку", "https://t.me/andrews_hurricane", "превращу ваши исходники", "пишите — обсудим ваш проект!", "@lykiardtg", "emalzp", "монтаж который приносит людям результаты", "@frutell04ka", "мои работы", "у тебя нет времени на монтаж", "@the13tn", "@anwazzup", "я занимаюсь видеомонтажом.", "@karinakraskj", "ищу заказы", "я олег — видеомонтажер", "@ragestrike", "@minec0mmand", "https://t.me/prtflconsence", "@terpkiy56", "https://t.me/eprikyanedit", "@kanexlz", "я дипломированный опытный", "занимаюсь созданием роликов", "смонтирую любой ваш контент", "@tamedghost", "@iamyownmuse", "я — видеомонтажёр,", "я — видеомонтажёр", "кастинг актеров", "предоставляю услуги", "работаю в видеомонтаже", "@abramov_prod", "почему твои видео не работают.", "предлагаю свои услуги", "@moshpitedit", "буду рад выйти на ваш проект", "@simon_rotkiv", "я специализируюсь на монтаже видео.", "я специализируюсь на монтаже видео", "я fulltime колорист", "монтаж для потребителя", "@daniilvfx", "@cgtesto", "свободен, ищу проекты", "монтирую круто", "я видео монтажёр", "@zinckprod", "ищу работу", "ищу начинающего", "@osukhovskiyfilms", "@sabo_tg", "нужен качественный монтаж?", "буду рада выйти", "готова выйти", "@film_post_production", "стану вашим монтажером", "@leifu", "@tati_lead_manager", "@kugukanton", "@emifilm", "монтаж который даст тебе результаты", "@tsujiss", "@aladdin_videomaker", "могу выйти на ваш проект", "я специализируюсь на монтаже", "я — профессиональный монтажёр", "традиционная акция уже близко!", "1 - h.264/265", "@vladin98", "ищу смм", "список основных триггеров:", "я профессиональный колорист", "ищите ответственного монтажёра?", "@asens410", "ищу девушку монтажерку для отношений", "делаю бесплатный монтаж", "https://t.me/jump_cut/773", "ищу проекты в портфолио", "бесплатный монтаж видео", "https://t.me/portgromov", "@smaryd1", "telegram:@smaryd1", "готов бесплатно смонтировать", "я режиссер монтажа.", "открыт к проектам", "@pslnnn", "@radicalsubject", "@logovosrg", "я профессиональный колорист.", "работаю в davinci resolve", "ищите ответственного монтажёра?", "я видеограф", "делаю ролики, которые приносят прибыль", "готов выполнить ваши задачи", "сделаю ебейший монтаж", "ищу проекты", "готова к новым проектам", "@slavik13evg", "монтаж, который дарит эмоции", "@kabadvd", "нужен качественный видеомонтаж?", "я занимаюсь монтажём", "сделаю сочнейший монтаж", "делаю уникальный монтаж", "ищу интересные заказы", "я занимаюсь цветокоррекцией", "худший монтаж - это когда моушн бессилен", "увеличил(а) репутацию", "монтаж на результат", "@alexei1v", "я-монтажёр", "@samnexer", "возьму проекты на цветокоррекцию", "выступаю в роли оператора", "выйду на ваши проекты", "готов выйти на смену", "открыт для новых проектов", "готов взять в работу", "я режиссёр-монтажа", "я занимаюсь видеомонтажом", "dreamreel production", "@nikitamontagx", "@satorussia", "работаю удаленно", "вот моё портфолио", "@crsupportcr"]
+exclude_words = ["#исходники@wecutit.", "@ru_montage_pins.", "#ищу_работу", "#ищуработу", "я видеомонтажёр", "занимаюсь монтажом", "#резюме", "нахожусь в поисках проектов", "я монтажёр", "я видеомонтажер", "я монтажер", "#портфолио", "#помогу", "#рилсмейкер", "предлагаю свою кандидатуру", "делаю монтаж", "мое портфолио", "я #видеомонтажёр", "работаю с блогерами", "reels / shorts / tiktok", "добро пожаловать в группу шапка чат.", "я занимаюсь монтажом", "создам красивую картинку", "я монтирую", "я помогу тебе", "мой монтаж", "предлагаю услуги", "почему вам стоит выбрать меня", "ищу новые проекты", "я оператор-постановщик", "почему стоит выбрать меня", "reels", "я - монтажер", "занимаюсь монтажом", "я начинающий монтажёр", "я начинающий специалист", "я монтирую", "я видеооператор-монтажер", "я колорист", "я занимаюсь монтажем", "создаю ролики", "мы делаем ролики", "тогда тебе — ко мне", "чем я конкретно занимаюсь", "я оператор-видеомонтажер", "вот что я умею", "я full-time колорист", "сделаю качественный моушен", "я сведу ваши лучшие кадры", "хочешь такой же монтаж", "свободен для проектов", "свободен для новых проектов", "летаю на дронах", "я начинающий монтажер", "я fulltime колорист", "я являюсь видеомонтажером", "я знаю толк в монтаже", "ваше сообщение удалено", "улетит в @ru_montage_pins", "ищу смм-менеджера.", "делаю волшебство в сфере монтажа", "clarity design", "@winerooo", "@kartinsky", "смонтирую бесплатно парочку", "https://t.me/andrews_hurricane", "превращу ваши исходники", "пишите — обсудим ваш проект!", "@lykiardtg", "emalzp", "монтаж который приносит людям результаты", "@frutell04ka", "мои работы", "у тебя нет времени на монтаж", "@the13tn", "@anwazzup", "я занимаюсь видеомонтажом.", "@karinakraskj", "ищу заказы", "я олег — видеомонтажер", "@ragestrike", "@minec0mmand", "https://t.me/prtflconsence", "@terpkiy56", "https://t.me/eprikyanedit", "@kanexlz", "я дипломированный опытный", "занимаюсь созданием роликов", "смонтирую любой ваш контент", "@tamedghost", "@iamyownmuse", "я — видеомонтажёр,", "я — видеомонтажёр", "кастинг актеров", "предоставляю услуги", "работаю в видеомонтаже", "@abramov_prod", "почему твои видео не работают.", "предлагаю свои услуги", "@moshpitedit", "буду рад выйти на ваш проект", "@simon_rotkiv", "я специализируюсь на монтаже видео.", "я специализируюсь на монтаже видео", "я fulltime колорист", "монтаж для потребителя", "@daniilvfx", "@cgtesto", "свободен, ищу проекты", "монтирую круто", "я видео монтажёр", "@zinckprod", "ищу работу", "ищу начинающего", "@osukhovskiyfilms", "@sabo_tg", "нужен качественный монтаж?", "буду рада выйти", "готова выйти", "@film_post_production", "стану вашим монтажером", "@leifu", "@tati_lead_manager", "@kugukanton", "@emifilm", "монтаж который даст тебе результаты", "@tsujiss", "@aladdin_videomaker", "могу выйти на ваш проект", "я специализируюсь на монтаже", "я — профессиональный монтажёр", "традиционная акция уже близко!", "1 - h.264/265", "@vladin98", "ищу смм", "список основных триггеров:", "я профессиональный колорист", "ищите ответственного монтажёра?", "@asens410", "ищу девушку монтажерку для отношений", "делаю бесплатный монтаж", "https://t.me/jump_cut/773", "ищу проекты в портфолио", "бесплатный монтаж видео", "https://t.me/portgromov", "@smaryd1", "telegram:@smaryd1", "готов бесплатно смонтировать", "я режиссер монтажа.", "открыт к проектам", "@pslnnn", "@radicalsubject", "@logovosrg", "я профессиональный колорист.", "работаю в davinci resolve", "ищите ответственного монтажёра?", "я видеограф", "делаю ролики, которые приносят прибыль", "готов выполнить ваши задачи", "сделаю ебейший монтаж", "ищу проекты", "готова к новым проектам", "@slavik13evg", "монтаж, который дарит эмоции", "@kabadvd", "нужен качественный видеомонтаж?", "я занимаюсь монтажём", "сделаю сочнейший монтаж", "делаю уникальный монтаж", "ищу интересные заказы", "я занимаюсь цветокоррекцией", "худший монтаж - это когда моушн бессилен", "увеличил(а) репутацию", "монтаж на результат", "@alexei1v", "я-монтажёр", "@samnexer", "возьму проекты на цветокоррекцию", "выступаю в роли оператора", "выйду на ваши проекты", "готов выйти на смену", "открыт для новых проектов", "готов взять в работу", "я режиссёр-монтажа", "я занимаюсь видеомонтажом", "dreamreel production", "@nikitamontagx", "@satorussia", "работаю удаленно", "вот моё портфолио", "@crsupportcr"]
 
 
 # === CLIENT ===
@@ -32,6 +32,34 @@ client = TelegramClient(
     api_hash,
     loop=loop
 )
+
+
+# === СОЗДАНИЕ ССЫЛКИ НА ИСХОДНОЕ СООБЩЕНИЕ ===
+def get_message_link(chat, chat_id, message_id):
+    """
+    Создает ссылку на исходное сообщение.
+
+    Для публичных чатов:
+        https://t.me/username/message_id
+
+    Для приватных групп:
+        https://t.me/c/chat_id_without_-100/message_id
+    """
+
+    # Публичный username
+    username = getattr(chat, "username", None)
+
+    if username:
+        return f"https://t.me/{username}/{message_id}"
+
+    # Приватная группа / супергруппа
+    if chat_id and str(chat_id).startswith("-100"):
+        internal_id = str(chat_id)[4:]
+        return f"https://t.me/c/{internal_id}/{message_id}"
+
+    # Если ссылку сформировать нельзя
+    return None
+
 
 # === HANDLER ===
 @client.on(events.NewMessage)
@@ -45,59 +73,101 @@ async def handler(event):
 
         print("📩 Получено:", msg[:100])
 
+        # === ПРОВЕРКА КЛЮЧЕВЫХ СЛОВ ===
         if not any(w in msg for w in include_words):
             return
 
+        # === ПРОВЕРКА ЧЕРНОГО СПИСКА СЛОВ ===
         if any(b in msg for b in exclude_words):
             print("⛔ Отфильтровано")
             return
 
+        # === ПОЛУЧАЕМ ЧАТ ===
         chat = await event.get_chat()
 
         chat_id = event.chat_id
-    
+
+        # === ЧЕРНЫЙ СПИСОК ЧАТОВ ===
         if chat_id in blacklist_chats:
             print(f"⛔ Игнорирую чат {chat_id}")
             return
-        
+
         sender = await event.get_sender()
 
-        chat_name = getattr(chat, "title", None) or getattr(chat, "username", None) or "Чат"
+        chat_name = (
+            getattr(chat, "title", None)
+            or getattr(chat, "username", None)
+            or "Чат"
+        )
 
         username = getattr(sender, "username", None)
         user_id = sender.id
 
         if username:
-            sender_display = f'<a href="https://t.me/{username}">@{username}</a>'
+            sender_display = (
+                f'<a href="https://t.me/{username}">@{username}</a>'
+            )
         else:
-            sender_display = f'<a href="tg://user?id={user_id}">Пользователь</a>'
+            sender_display = (
+                f'<a href="tg://user?id={user_id}">Пользователь</a>'
+            )
 
-        # шаблоны
-        msg1 = "Здравствуйте! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
-        msg2 = "Добрый день! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
-        msg3 = "Приветствую! Пишу по поводу монтажа.\n\nМои работы: https://disk.yandex.ru/d/CCI5jUdmZfH1gg"
+        # === ССЫЛКА НА ИСХОДНОЕ СООБЩЕНИЕ ===
+        message_link = get_message_link(
+            chat,
+            chat_id,
+            event.message.id
+        )
+
+        if message_link:
+            source_link = (
+                f"\n\n🔗 <a href='{message_link}'>"
+                f"Открыть исходное сообщение"
+                f"</a>"
+            )
+        else:
+            source_link = ""
+
+        # === ШАБЛОНЫ ОТКЛИКА ===
+        msg1 = (
+            "Добрый день! Пишу по поводу монтажа.\n\n"
+            "Мои работы: https://danilkaltashev.ru/"
+        )
+
+        msg2 = (
+            "Добрый день! Пишу по поводу съемки.\n\n"
+            "Мои работы: https://disk.yandex.ru/d/8FIdYtKkRPv5zQ"
+        )
 
         msg1_enc = urllib.parse.quote(msg1)
         msg2_enc = urllib.parse.quote(msg2)
-        msg3_enc = urllib.parse.quote(msg3)
 
         links = ""
+
         if username:
             links = (
                 f"\n\n💬 Отклики:\n"
-                f"— <a href='https://t.me/{username}?text={msg1_enc}'>Отклик 1</a>\n"
-                f"— <a href='https://t.me/{username}?text={msg2_enc}'>Отклик 2</a>\n"
-                f"— <a href='https://t.me/{username}?text={msg3_enc}'>Отклик 3</a>\n"
+                f"— <a href='https://t.me/{username}?text={msg1_enc}'>"
+                f"Отклик 1</a>\n"
+                f"— <a href='https://t.me/{username}?text={msg2_enc}'>"
+                f"Отклик 2</a>\n"
             )
 
+        # === ФИНАЛЬНОЕ СООБЩЕНИЕ ===
         text = (
             f"📢 Из чата: {chat_name}\n"
             f"👤 От: {sender_display}\n\n"
             f"{raw_msg}"
+            f"{source_link}"
             f"{links}"
         )
 
-        await client.send_message(target_chat, text, parse_mode="html")
+        # === ОТПРАВЛЯЕМ В ЦЕЛЕВОЙ ЧАТ ===
+        await client.send_message(
+            target_chat,
+            text,
+            parse_mode="html"
+        )
 
         print(f"✅ Отправлено из {chat_name}")
 
@@ -109,17 +179,22 @@ async def handler(event):
 async def handle(request):
     return web.Response(text="OK")
 
+
 async def web_server():
     app = web.Application()
     app.router.add_get("/", handle)
+
     runner = web.AppRunner(app)
     await runner.setup()
+
     site = web.TCPSite(
         runner,
         "0.0.0.0",
         int(os.environ.get("PORT", 8080))
     )
+
     await site.start()
+
     print("🌐 Web server started")
 
 
@@ -131,28 +206,38 @@ async def heartbeat():
             print(f"💓 OK — {me.username}")
         except Exception as e:
             print(f"💔 Heartbeat error: {e}")
+
         await asyncio.sleep(120)
 
 
 # === KEEP ALIVE ===
 async def keep_alive():
     import aiohttp
+
     while True:
         try:
             async with aiohttp.ClientSession() as session:
-                await session.get("https://vacansy-bot.onrender.com", timeout=10)
+                await session.get(
+                    "https://vacansy-bot.onrender.com",
+                    timeout=10
+                )
+
             print("🔄 ping OK")
+
         except Exception as e:
             print(f"❌ ping fail: {e}")
+
         await asyncio.sleep(120)
 
 
 # === MAIN ===
 async def main():
     await client.start()
+
     print("🤖 Бот запущен")
 
     await web_server()
+
     asyncio.create_task(heartbeat())
     asyncio.create_task(keep_alive())
 
